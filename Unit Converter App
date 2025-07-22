@@ -1,0 +1,570 @@
+package unitconverter;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.text.DecimalFormat;
+
+public class UnitConverterApp extends JFrame {
+
+    private JComboBox<String> categoryComboBox;
+    private JComboBox<String> fromUnitComboBox;
+    private JComboBox<String> toUnitComboBox;
+    private JTextField inputValueField;
+    private JTextField outputValueField;
+    private JButton convertButton;
+    private JButton clearButton;
+    private JButton onButton;
+    private JButton offButton;
+    private JLabel errorMessageLabel;
+
+    private String[] categories = {"Length", "Weight", "Temperature", "Volume", "Area", "Speed", "Digital Storage", "Time"};
+
+    private String[] lengthUnits = {"Meters", "Kilometers", "Centimeters", "Millimeters", "Miles", "Yards", "Feet", "Inches"};
+    private String[] weightUnits = {"Kilograms", "Grams", "Milligrams", "Pounds", "Ounces"};
+    private String[] temperatureUnits = {"Celsius", "Fahrenheit", "Kelvin"};
+    private String[] volumeUnits = {"Liters", "Milliliters", "Cubic Meters", "Cubic Centimeters", "Gallons", "Quarts", "Pints", "Cubic Feet", "Cubic Inches"};
+    private String[] areaUnits = {"Square Meters", "Square Kilometers", "Square Centimeters", "Square Miles", "Acres", "Square Yards", "Square Feet", "Square Inches"};
+    private String[] speedUnits = {"Meters/second", "Kilometers/hour", "Miles/hour", "Feet/second"};
+    private String[] digitalStorageUnits = {"Bytes", "Kilobytes", "Megabytes", "Gigabytes", "Terabytes"};
+    private String[] timeUnits = {"Seconds", "Minutes", "Hours", "Days", "Weeks", "Years"};
+
+    public UnitConverterApp() {
+        setTitle("Unit Converter App");
+        setSize(600, 450);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        JPanel mainPanel = new JPanel(new GridBagLayout());
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        mainPanel.setBackground(Color.BLACK);
+
+        GridBagConstraints gbcCategoryLabel = new GridBagConstraints();
+        gbcCategoryLabel.insets = new Insets(8, 8, 8, 8);
+        gbcCategoryLabel.gridx = 0;
+        gbcCategoryLabel.gridy = 0;
+        gbcCategoryLabel.gridwidth = 1;
+        gbcCategoryLabel.fill = GridBagConstraints.HORIZONTAL;
+        JLabel categoryLabel = new JLabel("Category:");
+        categoryLabel.setForeground(Color.WHITE);
+        mainPanel.add(categoryLabel, gbcCategoryLabel);
+
+        GridBagConstraints gbcCategoryComboBox = new GridBagConstraints();
+        gbcCategoryComboBox.insets = new Insets(8, 8, 8, 8);
+        gbcCategoryComboBox.gridx = 1;
+        gbcCategoryComboBox.gridy = 0;
+        gbcCategoryComboBox.gridwidth = 2;
+        gbcCategoryComboBox.fill = GridBagConstraints.HORIZONTAL;
+        categoryComboBox = new JComboBox<>(categories);
+        categoryComboBox.setFont(new Font("Arial", Font.PLAIN, 14));
+        categoryComboBox.setBackground(new Color(50, 50, 50));
+        categoryComboBox.setForeground(Color.WHITE);
+        mainPanel.add(categoryComboBox, gbcCategoryComboBox);
+
+        GridBagConstraints gbcInputLabel = new GridBagConstraints();
+        gbcInputLabel.insets = new Insets(8, 8, 8, 8);
+        gbcInputLabel.gridx = 0;
+        gbcInputLabel.gridy = 1;
+        gbcInputLabel.gridwidth = 1;
+        gbcInputLabel.fill = GridBagConstraints.HORIZONTAL;
+        JLabel inputLabel = new JLabel("Input Value:");
+        inputLabel.setForeground(Color.WHITE);
+        mainPanel.add(inputLabel, gbcInputLabel);
+
+        GridBagConstraints gbcInputValueField = new GridBagConstraints();
+        gbcInputValueField.insets = new Insets(8, 8, 8, 8);
+        gbcInputValueField.gridx = 1;
+        gbcInputValueField.gridy = 1;
+        gbcInputValueField.gridwidth = 2;
+        gbcInputValueField.fill = GridBagConstraints.HORIZONTAL;
+        inputValueField = new JTextField(15);
+        inputValueField.setFont(new Font("Arial", Font.PLAIN, 14));
+        inputValueField.setBackground(new Color(50, 50, 50));
+        inputValueField.setForeground(Color.WHITE);
+        inputValueField.setCaretColor(Color.WHITE);
+        mainPanel.add(inputValueField, gbcInputValueField);
+
+        GridBagConstraints gbcFromUnitLabel = new GridBagConstraints();
+        gbcFromUnitLabel.insets = new Insets(8, 8, 8, 8);
+        gbcFromUnitLabel.gridx = 0;
+        gbcFromUnitLabel.gridy = 2;
+        gbcFromUnitLabel.gridwidth = 1;
+        gbcFromUnitLabel.fill = GridBagConstraints.HORIZONTAL;
+        JLabel fromUnitLabel = new JLabel("From Unit:");
+        fromUnitLabel.setForeground(Color.WHITE);
+        mainPanel.add(fromUnitLabel, gbcFromUnitLabel);
+
+        GridBagConstraints gbcFromUnitComboBox = new GridBagConstraints();
+        gbcFromUnitComboBox.insets = new Insets(8, 8, 8, 8);
+        gbcFromUnitComboBox.gridx = 1;
+        gbcFromUnitComboBox.gridy = 2;
+        gbcFromUnitComboBox.gridwidth = 2;
+        gbcFromUnitComboBox.fill = GridBagConstraints.HORIZONTAL;
+        fromUnitComboBox = new JComboBox<>();
+        fromUnitComboBox.setFont(new Font("Arial", Font.PLAIN, 14));
+        fromUnitComboBox.setBackground(new Color(50, 50, 50));
+        fromUnitComboBox.setForeground(Color.WHITE);
+        mainPanel.add(fromUnitComboBox, gbcFromUnitComboBox);
+
+        GridBagConstraints gbcToUnitLabel = new GridBagConstraints();
+        gbcToUnitLabel.insets = new Insets(8, 8, 8, 8);
+        gbcToUnitLabel.gridx = 0;
+        gbcToUnitLabel.gridy = 3;
+        gbcToUnitLabel.gridwidth = 1;
+        gbcToUnitLabel.fill = GridBagConstraints.HORIZONTAL;
+        JLabel toUnitLabel = new JLabel("To Unit:");
+        toUnitLabel.setForeground(Color.WHITE);
+        mainPanel.add(toUnitLabel, gbcToUnitLabel);
+
+        GridBagConstraints gbcToUnitComboBox = new GridBagConstraints();
+        gbcToUnitComboBox.insets = new Insets(8, 8, 8, 8);
+        gbcToUnitComboBox.gridx = 1;
+        gbcToUnitComboBox.gridy = 3;
+        gbcToUnitComboBox.gridwidth = 2;
+        gbcToUnitComboBox.fill = GridBagConstraints.HORIZONTAL;
+        toUnitComboBox = new JComboBox<>();
+        toUnitComboBox.setFont(new Font("Arial", Font.PLAIN, 14));
+        toUnitComboBox.setBackground(new Color(50, 50, 50));
+        toUnitComboBox.setForeground(Color.WHITE);
+        mainPanel.add(toUnitComboBox, gbcToUnitComboBox);
+
+        // --- Output Value (Moved Above Buttons) ---
+        GridBagConstraints gbcOutputLabel = new GridBagConstraints();
+        gbcOutputLabel.insets = new Insets(8, 8, 8, 8);
+        gbcOutputLabel.gridx = 0;
+        gbcOutputLabel.gridy = 4; // Changed gridy
+        gbcOutputLabel.gridwidth = 1;
+        gbcOutputLabel.fill = GridBagConstraints.HORIZONTAL;
+        gbcOutputLabel.anchor = GridBagConstraints.WEST;
+        JLabel outputLabel = new JLabel("Output Value:");
+        outputLabel.setForeground(Color.WHITE);
+        mainPanel.add(outputLabel, gbcOutputLabel);
+
+        GridBagConstraints gbcOutputValueField = new GridBagConstraints();
+        gbcOutputValueField.insets = new Insets(8, 8, 8, 8);
+        gbcOutputValueField.gridx = 1;
+        gbcOutputValueField.gridy = 4; // Changed gridy
+        gbcOutputValueField.gridwidth = 2;
+        gbcOutputValueField.fill = GridBagConstraints.HORIZONTAL;
+        outputValueField = new JTextField(15);
+        outputValueField.setFont(new Font("Arial", Font.BOLD, 14));
+        outputValueField.setEditable(false);
+        outputValueField.setBackground(new Color(50, 50, 50));
+        outputValueField.setForeground(Color.WHITE);
+        mainPanel.add(outputValueField, gbcOutputValueField);
+
+        // --- ON/OFF, Convert, and Clear Buttons ---
+        GridBagConstraints gbcButtonPanel = new GridBagConstraints();
+        gbcButtonPanel.insets = new Insets(15, 8, 8, 8); // Adjusted padding after output field
+        gbcButtonPanel.gridx = 0;
+        gbcButtonPanel.gridy = 5; // Changed gridy
+        gbcButtonPanel.gridwidth = 3;
+        gbcButtonPanel.fill = GridBagConstraints.NONE;
+        gbcButtonPanel.anchor = GridBagConstraints.CENTER;
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
+        buttonPanel.setBackground(Color.BLACK);
+
+        onButton = new JButton("ON");
+        onButton.setFont(new Font("Arial", Font.BOLD, 16));
+        onButton.setBackground(new Color(34, 139, 34));
+        onButton.setForeground(Color.WHITE);
+        onButton.setFocusPainted(false);
+        onButton.setBorder(BorderFactory.createLineBorder(new Color(20, 100, 20), 2));
+        onButton.setPreferredSize(new Dimension(80, 40));
+        buttonPanel.add(onButton);
+
+        offButton = new JButton("OFF");
+        offButton.setFont(new Font("Arial", Font.BOLD, 16));
+        offButton.setBackground(new Color(220, 20, 60));
+        offButton.setForeground(Color.WHITE);
+        offButton.setFocusPainted(false);
+        offButton.setBorder(BorderFactory.createLineBorder(new Color(180, 10, 40), 2));
+        offButton.setPreferredSize(new Dimension(80, 40));
+        buttonPanel.add(offButton);
+
+        convertButton = new JButton("Convert");
+        convertButton.setFont(new Font("Arial", Font.BOLD, 16));
+        convertButton.setBackground(new Color(70, 130, 180));
+        convertButton.setForeground(Color.WHITE);
+        convertButton.setFocusPainted(false);
+        convertButton.setBorder(BorderFactory.createLineBorder(new Color(50, 100, 150), 2));
+        convertButton.setPreferredSize(new Dimension(120, 40));
+        buttonPanel.add(convertButton);
+
+        clearButton = new JButton("Clear");
+        clearButton.setFont(new Font("Arial", Font.BOLD, 16));
+        clearButton.setBackground(new Color(180, 70, 70));
+        clearButton.setForeground(Color.WHITE);
+        clearButton.setFocusPainted(false);
+        clearButton.setBorder(BorderFactory.createLineBorder(new Color(150, 50, 50), 2));
+        clearButton.setPreferredSize(new Dimension(120, 40));
+        buttonPanel.add(clearButton);
+
+        mainPanel.add(buttonPanel, gbcButtonPanel);
+
+        // --- Error Message Label (Moved Below Buttons) ---
+        GridBagConstraints gbcErrorMessageLabel = new GridBagConstraints();
+        gbcErrorMessageLabel.insets = new Insets(8, 8, 8, 8);
+        gbcErrorMessageLabel.gridx = 0;
+        gbcErrorMessageLabel.gridy = 6; // Changed gridy
+        gbcErrorMessageLabel.gridwidth = 3;
+        gbcErrorMessageLabel.fill = GridBagConstraints.HORIZONTAL;
+        errorMessageLabel = new JLabel("");
+        errorMessageLabel.setForeground(Color.RED);
+        errorMessageLabel.setFont(new Font("Arial", Font.ITALIC, 12));
+        mainPanel.add(errorMessageLabel, gbcErrorMessageLabel);
+
+        add(mainPanel);
+
+        updateUnitComboBoxes();
+        setConverterEnabled(true);
+
+        categoryComboBox.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    updateUnitComboBoxes();
+                    clearFields();
+                }
+            }
+        });
+
+        convertButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                performConversion();
+            }
+        });
+
+        clearButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                clearFields();
+            }
+        });
+
+        onButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setConverterEnabled(true);
+                errorMessageLabel.setText("");
+            }
+        });
+
+        offButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setConverterEnabled(false);
+                clearFields();
+                errorMessageLabel.setText("Converter is OFF.");
+            }
+        });
+    }
+
+    private void setConverterEnabled(boolean enabled) {
+        inputValueField.setEnabled(enabled);
+        fromUnitComboBox.setEnabled(enabled);
+        toUnitComboBox.setEnabled(enabled);
+        convertButton.setEnabled(enabled);
+        if (!enabled) {
+            outputValueField.setText("");
+        }
+    }
+
+    private void updateUnitComboBoxes() {
+        String selectedCategory = (String) categoryComboBox.getSelectedItem();
+        String[] units = null;
+
+        switch (selectedCategory) {
+            case "Length":
+                units = lengthUnits;
+                break;
+            case "Weight":
+                units = weightUnits;
+                break;
+            case "Temperature":
+                units = temperatureUnits;
+                break;
+            case "Volume":
+                units = volumeUnits;
+                break;
+            case "Area":
+                units = areaUnits;
+                break;
+            case "Speed":
+                units = speedUnits;
+                break;
+            case "Digital Storage":
+                units = digitalStorageUnits;
+                break;
+            case "Time":
+                units = timeUnits;
+                break;
+        }
+
+        fromUnitComboBox.removeAllItems();
+        toUnitComboBox.removeAllItems();
+
+        if (units != null) {
+            for (String unit : units) {
+                fromUnitComboBox.addItem(unit);
+                toUnitComboBox.addItem(unit);
+            }
+        }
+    }
+
+    private void clearFields() {
+        inputValueField.setText("");
+        outputValueField.setText("");
+        errorMessageLabel.setText("");
+    }
+
+    private void performConversion() {
+        errorMessageLabel.setText("");
+        String inputStr = inputValueField.getText();
+        if (inputStr.isEmpty()) {
+            errorMessageLabel.setText("Please enter a value to convert.");
+            return;
+        }
+
+        double inputValue;
+        try {
+            inputValue = Double.parseDouble(inputStr);
+        } catch (NumberFormatException ex) {
+            errorMessageLabel.setText("Invalid input. Please enter a numeric value.");
+            return;
+        }
+
+        String selectedCategory = (String) categoryComboBox.getSelectedItem();
+        String fromUnit = (String) fromUnitComboBox.getSelectedItem();
+        String toUnit = (String) toUnitComboBox.getSelectedItem();
+
+        if (fromUnit == null || toUnit == null) {
+            errorMessageLabel.setText("Please select both 'From' and 'To' units.");
+            return;
+        }
+
+        double result = 0.0;
+
+        switch (selectedCategory) {
+            case "Length":
+                result = convertLength(inputValue, fromUnit, toUnit);
+                break;
+            case "Weight":
+                result = convertWeight(inputValue, fromUnit, toUnit);
+                break;
+            case "Temperature":
+                result = convertTemperature(inputValue, fromUnit, toUnit);
+                break;
+            case "Volume":
+                result = convertVolume(inputValue, fromUnit, toUnit);
+                break;
+            case "Area":
+                result = convertArea(inputValue, fromUnit, toUnit);
+                break;
+            case "Speed":
+                result = convertSpeed(inputValue, fromUnit, toUnit);
+                break;
+            case "Digital Storage":
+                result = convertDigitalStorage(inputValue, fromUnit, toUnit);
+                break;
+            case "Time":
+                result = convertTime(inputValue, fromUnit, toUnit);
+                break;
+        }
+
+        DecimalFormat df = new DecimalFormat("#.##");
+        outputValueField.setText(df.format(result));
+    }
+
+    private double convertLength(double value, String fromUnit, String toUnit) {
+        double valueInMeters = 0.0;
+        switch (fromUnit) {
+            case "Meters":      valueInMeters = value; break;
+            case "Kilometers":  valueInMeters = value * 1000; break;
+            case "Centimeters": valueInMeters = value / 100; break;
+            case "Millimeters": valueInMeters = value / 1000; break;
+            case "Miles":       valueInMeters = value * 1609.34; break;
+            case "Yards":       valueInMeters = value * 0.9144; break;
+            case "Feet":        valueInMeters = value * 0.3048; break;
+            case "Inches":      valueInMeters = value * 0.0254; break;
+        }
+        double result = 0.0;
+        switch (toUnit) {
+            case "Meters":      result = valueInMeters; break;
+            case "Kilometers":  result = valueInMeters / 1000; break;
+            case "Centimeters": result = valueInMeters * 100; break;
+            case "Millimeters": result = valueInMeters * 1000; break;
+            case "Miles":       result = valueInMeters / 1609.34; break;
+            case "Yards":       result = valueInMeters / 0.9144; break;
+            case "Feet":        result = valueInMeters / 0.3048; break;
+            case "Inches":      result = valueInMeters / 0.0254; break;
+        }
+        return result;
+    }
+
+    private double convertWeight(double value, String fromUnit, String toUnit) {
+        double valueInKilograms = 0.0;
+        switch (fromUnit) {
+            case "Kilograms":   valueInKilograms = value; break;
+            case "Grams":       valueInKilograms = value / 1000; break;
+            case "Milligrams":  valueInKilograms = value / 1_000_000; break;
+            case "Pounds":      valueInKilograms = value * 0.453592; break;
+            case "Ounces":      valueInKilograms = value * 0.0283495; break;
+        }
+        double result = 0.0;
+        switch (toUnit) {
+            case "Kilograms":   result = valueInKilograms; break;
+            case "Grams":       result = valueInKilograms * 1000; break;
+            case "Milligrams":  result = valueInKilograms * 1_000_000; break;
+            case "Pounds":      result = valueInKilograms / 0.453592; break;
+            case "Ounces":      result = valueInKilograms / 0.0283495; break;
+        }
+        return result;
+    }
+
+    private double convertTemperature(double value, String fromUnit, String toUnit) {
+        double valueInCelsius = 0.0;
+        switch (fromUnit) {
+            case "Celsius":    valueInCelsius = value; break;
+            case "Fahrenheit": valueInCelsius = (value - 32) * 5 / 9; break;
+            case "Kelvin":     valueInCelsius = value - 273.15; break;
+        }
+        double result = 0.0;
+        switch (toUnit) {
+            case "Celsius":    result = valueInCelsius; break;
+            case "Fahrenheit": result = (valueInCelsius * 9 / 5) + 32; break;
+            case "Kelvin":     result = valueInCelsius + 273.15; break;
+        }
+        return result;
+    }
+
+    private double convertVolume(double value, String fromUnit, String toUnit) {
+        double valueInLiters = 0.0;
+        switch (fromUnit) {
+            case "Liters":          valueInLiters = value; break;
+            case "Milliliters":     valueInLiters = value / 1000; break;
+            case "Cubic Meters":    valueInLiters = value * 1000; break;
+            case "Cubic Centimeters": valueInLiters = value / 1000; break;
+            case "Gallons":         valueInLiters = value * 3.78541; break;
+            case "Quarts":          valueInLiters = value * 0.946353; break;
+            case "Pints":           valueInLiters = value * 0.473176; break;
+            case "Cubic Feet":      valueInLiters = value * 28.3168; break;
+            case "Cubic Inches":    valueInLiters = value * 0.0163871; break;
+        }
+        double result = 0.0;
+        switch (toUnit) {
+            case "Liters":          result = valueInLiters; break;
+            case "Milliliters":     result = valueInLiters * 1000; break;
+            case "Cubic Meters":    result = valueInLiters / 1000; break;
+            case "Cubic Centimeters": result = valueInLiters * 1000; break;
+            case "Gallons":         result = valueInLiters / 3.78541; break;
+            case "Quarts":          result = valueInLiters / 0.946353; break;
+            case "Pints":           result = valueInLiters / 0.473176; break;
+            case "Cubic Feet":      result = valueInLiters / 28.3168; break;
+            case "Cubic Inches":    result = valueInLiters / 0.0163871; break;
+        }
+        return result;
+    }
+
+    private double convertArea(double value, String fromUnit, String toUnit) {
+        double valueInSquareMeters = 0.0;
+        switch (fromUnit) {
+            case "Square Meters":       valueInSquareMeters = value; break;
+            case "Square Kilometers":   valueInSquareMeters = value * 1_000_000; break;
+            case "Square Centimeters":  valueInSquareMeters = value / 10_000; break;
+            case "Square Miles":        valueInSquareMeters = value * 2_589_988.11; break;
+            case "Acres":               valueInSquareMeters = value * 4046.86; break;
+            case "Square Yards":        valueInSquareMeters = value * 0.836127; break;
+            case "Square Feet":         valueInSquareMeters = value * 0.092903; break;
+            case "Square Inches":       valueInSquareMeters = value * 0.00064516; break;
+        }
+        double result = 0.0;
+        switch (toUnit) {
+            case "Square Meters":       result = valueInSquareMeters; break;
+            case "Square Kilometers":   result = valueInSquareMeters / 1_000_000; break;
+            case "Square Centimeters":  result = valueInSquareMeters * 10_000; break;
+            case "Square Miles":        result = valueInSquareMeters / 2_589_988.11; break;
+            case "Acres":               result = valueInSquareMeters / 4046.86; break;
+            case "Square Yards":        result = valueInSquareMeters / 0.836127; break;
+            case "Square Feet":         result = valueInSquareMeters / 0.092903; break;
+            case "Square Inches":       result = valueInSquareMeters / 0.00064516; break;
+        }
+        return result;
+    }
+
+    private double convertSpeed(double value, String fromUnit, String toUnit) {
+        double valueInMetersPerSecond = 0.0;
+        switch (fromUnit) {
+            case "Meters/second":   valueInMetersPerSecond = value; break;
+            case "Kilometers/hour": valueInMetersPerSecond = value / 3.6; break;
+            case "Miles/hour":      valueInMetersPerSecond = value * 0.44704; break;
+            case "Feet/second":     valueInMetersPerSecond = value * 0.3048; break;
+        }
+        double result = 0.0;
+        switch (toUnit) {
+            case "Meters/second":   result = valueInMetersPerSecond; break;
+            case "Kilometers/hour": result = valueInMetersPerSecond * 3.6; break;
+            case "Miles/hour":      result = valueInMetersPerSecond / 0.44704; break;
+            case "Feet/second":     result = valueInMetersPerSecond / 0.3048; break;
+        }
+        return result;
+    }
+
+    private double convertDigitalStorage(double value, String fromUnit, String toUnit) {
+        double valueInBytes = 0.0;
+        switch (fromUnit) {
+            case "Bytes":      valueInBytes = value; break;
+            case "Kilobytes":  valueInBytes = value * 1024; break;
+            case "Megabytes":  valueInBytes = value * 1024 * 1024; break;
+            case "Gigabytes":  valueInBytes = value * 1024 * 1024 * 1024; break;
+            case "Terabytes":  valueInBytes = value * 1024 * 1024 * 1024 * 1024; break;
+        }
+
+        double result = 0.0;
+        switch (toUnit) {
+            case "Bytes":      result = valueInBytes; break;
+            case "Kilobytes":  result = valueInBytes / 1024; break;
+            case "Megabytes":  result = valueInBytes / (1024 * 1024); break;
+            case "Gigabytes":  result = valueInBytes / (1024 * 1024 * 1024); break;
+            case "Terabytes":  result = valueInBytes / (1024 * 1024 * 1024 * 1024); break;
+        }
+        return result;
+    }
+
+    private double convertTime(double value, String fromUnit, String toUnit) {
+        double valueInSeconds = 0.0;
+        switch (fromUnit) {
+            case "Seconds": valueInSeconds = value; break;
+            case "Minutes": valueInSeconds = value * 60; break;
+            case "Hours":   valueInSeconds = value * 3600; break;
+            case "Days":    valueInSeconds = value * 86400; break;
+            case "Weeks":   valueInSeconds = value * 604800; break;
+            case "Years":   valueInSeconds = value * 31536000; break;
+        }
+
+        double result = 0.0;
+        switch (toUnit) {
+            case "Seconds": result = valueInSeconds; break;
+            case "Minutes": result = valueInSeconds / 60; break;
+            case "Hours":   result = valueInSeconds / 3600; break;
+            case "Days":    result = valueInSeconds / 86400; break;
+            case "Weeks":   result = valueInSeconds / 604800; break;
+            case "Years":   result = valueInSeconds / 31536000; break;
+        }
+        return result;
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new UnitConverterApp().setVisible(true);
+            }
+        });
+    }
+}

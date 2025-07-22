@@ -1,0 +1,363 @@
+package bmi;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
+
+public class BMI extends JFrame implements ActionListener {
+
+    private static final long serialVersionUID = 1L; 
+
+    // UI Components
+    private JTextField ageField, heightField, weightField, heightInchField;
+    private JComboBox<String> heightUnitComboBox;
+    private JRadioButton maleRadio, femaleRadio;
+    private ButtonGroup genderGroup;
+    private JLabel bmiResultLabel, bmrResultLabel, diabetesRiskLabel;
+    private JButton calculateButton, clearButton;
+    private JRadioButton onRadio, offRadio;
+    private ButtonGroup powerGroup;
+
+    public BMI() {
+        setTitle("BMI & BMR Calculator");
+        setSize(450, 680);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setLayout(new BorderLayout(10, 10));
+
+        JPanel contentPanel = new JPanel();
+        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+        contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        contentPanel.setBackground(Color.BLACK);
+
+        JLabel title = new JLabel("Health Metrics Calculator");
+        title.setFont(new Font("Arial", Font.BOLD, 28));
+        title.setAlignmentX(Component.CENTER_ALIGNMENT);
+        title.setForeground(Color.WHITE);
+        contentPanel.add(title);
+        contentPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+
+        JPanel powerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
+        powerPanel.setBackground(Color.BLACK);
+
+        onRadio = new JRadioButton("ON");
+        offRadio = new JRadioButton("OFF", true);
+        powerGroup = new ButtonGroup();
+        powerGroup.add(onRadio);
+        powerGroup.add(offRadio);
+
+        onRadio.setFont(new Font("Arial", Font.BOLD, 16));
+        offRadio.setFont(new Font("Arial", Font.BOLD, 16));
+        onRadio.setForeground(Color.GREEN);
+        offRadio.setForeground(Color.RED);
+        onRadio.setOpaque(false);
+        offRadio.setOpaque(false);
+
+        onRadio.addActionListener(this);
+        offRadio.addActionListener(this);
+        powerPanel.add(onRadio);
+        powerPanel.add(offRadio);
+        powerPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        contentPanel.add(powerPanel);
+        contentPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+
+        JPanel inputPanel = new JPanel(new GridBagLayout());
+        inputPanel.setBackground(Color.BLACK);
+
+        // Gender Label
+        GridBagConstraints gbcGenderLabel = new GridBagConstraints();
+        gbcGenderLabel.gridx = 0;
+        gbcGenderLabel.gridy = 0;
+        gbcGenderLabel.insets = new Insets(8, 5, 8, 5);
+        gbcGenderLabel.anchor = GridBagConstraints.WEST;
+        JLabel genderLabel = new JLabel("Gender:");
+        genderLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+        genderLabel.setForeground(Color.WHITE);
+        inputPanel.add(genderLabel, gbcGenderLabel);
+
+        // Gender Radio Panel
+        GridBagConstraints gbcRadioPanel = new GridBagConstraints();
+        gbcRadioPanel.gridx = 1;
+        gbcRadioPanel.gridy = 0;
+        gbcRadioPanel.insets = new Insets(8, 5, 8, 5);
+        gbcRadioPanel.anchor = GridBagConstraints.WEST;
+
+        JPanel radioPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        radioPanel.setBackground(Color.BLACK);
+        maleRadio = new JRadioButton("Male", true);
+        femaleRadio = new JRadioButton("Female");
+        genderGroup = new ButtonGroup();
+        genderGroup.add(maleRadio);
+        genderGroup.add(femaleRadio);
+        maleRadio.setForeground(Color.WHITE);
+        femaleRadio.setForeground(Color.WHITE);
+        maleRadio.setOpaque(false);
+        femaleRadio.setOpaque(false);
+        radioPanel.add(maleRadio);
+        radioPanel.add(femaleRadio);
+        inputPanel.add(radioPanel, gbcRadioPanel);
+
+        ageField = new JTextField(10);
+        ageField.setFont(new Font("Arial", Font.PLAIN, 16));
+        ageField.setBackground(Color.WHITE);
+        ageField.setForeground(Color.BLACK);
+        addInputRow(inputPanel, 1, "Age (years):", ageField);
+
+        heightField = new JTextField(6);
+        heightField.setFont(new Font("Arial", Font.PLAIN, 16));
+        heightField.setBackground(Color.WHITE);
+        heightField.setForeground(Color.BLACK);
+
+        heightInchField = new JTextField(4);
+        heightInchField.setFont(new Font("Arial", Font.PLAIN, 16));
+        heightInchField.setBackground(Color.WHITE);
+        heightInchField.setForeground(Color.BLACK);
+        heightInchField.setVisible(false);
+
+        String[] heightUnits = {"cm", "m", "feet & inch"};
+        heightUnitComboBox = new JComboBox<>(heightUnits);
+        heightUnitComboBox.setFont(new Font("Arial", Font.PLAIN, 14));
+        heightUnitComboBox.setBackground(Color.WHITE);
+        heightUnitComboBox.setForeground(Color.BLACK);
+        heightUnitComboBox.addActionListener(this);
+
+        JPanel heightInputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        heightInputPanel.setBackground(Color.BLACK);
+        heightInputPanel.add(heightField);
+        heightInputPanel.add(heightInchField);
+        heightInputPanel.add(heightUnitComboBox);
+        addInputRow(inputPanel, 2, "Height:", heightInputPanel);
+
+        weightField = new JTextField(10);
+        weightField.setFont(new Font("Arial", Font.PLAIN, 16));
+        weightField.setBackground(Color.WHITE);
+        weightField.setForeground(Color.BLACK);
+        addInputRow(inputPanel, 3, "Weight (kg):", weightField);
+
+        inputPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        contentPanel.add(inputPanel);
+        contentPanel.add(Box.createRigidArea(new Dimension(0, 30)));
+
+        JPanel resultDisplayPanel = new JPanel();
+        resultDisplayPanel.setLayout(new BoxLayout(resultDisplayPanel, BoxLayout.Y_AXIS));
+        resultDisplayPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        resultDisplayPanel.setBackground(Color.BLACK);
+
+        bmiResultLabel = new JLabel("BMI: -");
+        bmiResultLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        bmiResultLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        bmiResultLabel.setForeground(Color.WHITE);
+        resultDisplayPanel.add(bmiResultLabel);
+        resultDisplayPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+
+        bmrResultLabel = new JLabel("BMR: -");
+        bmrResultLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        bmrResultLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        bmrResultLabel.setForeground(Color.WHITE);
+        resultDisplayPanel.add(bmrResultLabel);
+        resultDisplayPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+
+        diabetesRiskLabel = new JLabel("Diabetes Risk: -");
+        diabetesRiskLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        diabetesRiskLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        diabetesRiskLabel.setForeground(Color.WHITE);
+        resultDisplayPanel.add(diabetesRiskLabel);
+        resultDisplayPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+
+        JTextArea disclaimer = new JTextArea("Note: This diabetes risk indicator is based on BMI and is for general informational purposes only.");
+        disclaimer.setFont(new Font("Arial", Font.ITALIC, 10));
+        disclaimer.setForeground(Color.GRAY);
+        disclaimer.setBackground(Color.BLACK);
+        disclaimer.setWrapStyleWord(true);
+        disclaimer.setLineWrap(true);
+        disclaimer.setEditable(false);
+        disclaimer.setFocusable(false);
+        disclaimer.setAlignmentX(Component.CENTER_ALIGNMENT);
+        resultDisplayPanel.add(disclaimer);
+
+        resultDisplayPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        contentPanel.add(resultDisplayPanel);
+        contentPanel.add(Box.createRigidArea(new Dimension(0, 30)));
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
+        buttonPanel.setBackground(Color.BLACK);
+
+        calculateButton = new JButton("Calculate");
+        clearButton = new JButton("Clear");
+
+        calculateButton.setFont(new Font("Arial", Font.BOLD, 16));
+        clearButton.setFont(new Font("Arial", Font.BOLD, 16));
+
+        calculateButton.setBackground(Color.WHITE);
+        clearButton.setBackground(Color.WHITE);
+        calculateButton.setForeground(Color.BLACK);
+        clearButton.setForeground(Color.BLACK);
+
+        calculateButton.addActionListener(this);
+        clearButton.addActionListener(this);
+
+        buttonPanel.add(calculateButton);
+        buttonPanel.add(clearButton);
+        contentPanel.add(buttonPanel);
+
+        add(contentPanel, BorderLayout.CENTER);
+        setComponentsEnabled(false);
+    }
+
+    private void addInputRow(JPanel panel, int row, String labelText, Component inputComponent) {
+        GridBagConstraints gbcLabel = new GridBagConstraints();
+        gbcLabel.gridx = 0;
+        gbcLabel.gridy = row;
+        gbcLabel.anchor = GridBagConstraints.WEST;
+        gbcLabel.insets = new Insets(8, 5, 8, 5);
+
+        JLabel label = new JLabel(labelText);
+        label.setFont(new Font("Arial", Font.PLAIN, 16));
+        label.setForeground(Color.WHITE);
+        panel.add(label, gbcLabel);
+
+        GridBagConstraints gbcField = new GridBagConstraints();
+        gbcField.gridx = 1;
+        gbcField.gridy = row;
+        gbcField.weightx = 1.0;
+        gbcField.fill = GridBagConstraints.HORIZONTAL;
+        gbcField.anchor = GridBagConstraints.EAST;
+        gbcField.insets = new Insets(8, 5, 8, 5);
+
+        panel.add(inputComponent, gbcField);
+    }
+
+    private void setComponentsEnabled(boolean enable) {
+        ageField.setEnabled(enable);
+        heightField.setEnabled(enable);
+        heightUnitComboBox.setEnabled(enable);
+
+        if (heightUnitComboBox.getSelectedItem().equals("feet & inch")) {
+            heightInchField.setEnabled(enable);
+        } else {
+            heightInchField.setEnabled(false);
+        }
+
+        maleRadio.setEnabled(enable);
+        femaleRadio.setEnabled(enable);
+        calculateButton.setEnabled(enable);
+        clearButton.setEnabled(enable);
+
+        if (!enable) {
+            bmiResultLabel.setText("BMI: -");
+            bmrResultLabel.setText("BMR: -");
+            diabetesRiskLabel.setText("Diabetes Risk: -");
+        }
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == calculateButton) {
+            calculateBMIandBMR();
+        } else if (e.getSource() == clearButton) {
+            clearFields();
+        } else if (e.getSource() == onRadio) {
+            setComponentsEnabled(true);
+        } else if (e.getSource() == offRadio) {
+            setComponentsEnabled(false);
+            clearFields();
+        } else if (e.getSource() == heightUnitComboBox) {
+            if (heightUnitComboBox.getSelectedItem().equals("feet & inch")) {
+                heightInchField.setVisible(true);
+                heightField.setToolTipText("Feet");
+                heightInchField.setToolTipText("Inches");
+                heightField.setText("");
+                heightInchField.setText("");
+            } else {
+                heightInchField.setVisible(false);
+                heightField.setToolTipText(null);
+                heightInchField.setToolTipText(null);
+                heightField.setText("");
+                heightInchField.setText("");
+            }
+
+            if (onRadio.isSelected()) {
+                setComponentsEnabled(true);
+            }
+        }
+    }
+
+    private String getBMICategory(double bmi) {
+        if (bmi < 18.5) return "Underweight";
+        else if (bmi < 24.9) return "Normal Weight";
+        else if (bmi < 29.9) return "Overweight";
+        else return "Obese";
+    }
+
+    private String getDiabetesRiskIndicator(double bmi) {
+        if (bmi >= 30.0) return "High Risk";
+        else if (bmi >= 25.0) return "Increased Risk";
+        else if (bmi >= 18.5) return "Healthy Lifestyle";
+        else return "Lower Risk";
+    }
+
+    private void calculateBMIandBMR() {
+        try {
+            int age = Integer.parseInt(ageField.getText());
+            double weightKg = Double.parseDouble(weightField.getText());
+            double heightCm;
+
+            String unit = (String) heightUnitComboBox.getSelectedItem();
+            double heightVal = Double.parseDouble(heightField.getText());
+
+            switch (unit) {
+                case "cm": heightCm = heightVal; break;
+                case "m": heightCm = heightVal * 100; break;
+                case "feet & inch":
+                    double inches = Double.parseDouble(heightInchField.getText());
+                    heightCm = (heightVal * 30.48) + (inches * 2.54);
+                    break;
+                default:
+                    JOptionPane.showMessageDialog(this, "Invalid height unit.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+            }
+
+            if (age <= 0 || age > 120 || heightCm <= 50 || heightCm > 250 || weightKg <= 10 || weightKg > 300) {
+                JOptionPane.showMessageDialog(this, "Please enter valid age, height, and weight.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            double heightM = heightCm / 100.0;
+            double bmi = weightKg / (heightM * heightM);
+            String bmiText = new DecimalFormat("#.##").format(bmi);
+            bmiResultLabel.setText("BMI: " + bmiText + " (" + getBMICategory(bmi) + ")");
+
+            double bmr = (maleRadio.isSelected())
+                    ? (10 * weightKg) + (6.25 * heightCm) - (5 * age) + 5
+                    : (10 * weightKg) + (6.25 * heightCm) - (5 * age) - 161;
+            bmrResultLabel.setText("BMR: " + new DecimalFormat("#.##").format(bmr) + " kcal/day");
+
+            diabetesRiskLabel.setText("Diabetes Risk: " + getDiabetesRiskIndicator(bmi));
+
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Please enter valid numbers.", "Input Error", JOptionPane.ERROR_MESSAGE);
+            bmiResultLabel.setText("BMI: -");
+            bmrResultLabel.setText("BMR: -");
+            diabetesRiskLabel.setText("Diabetes Risk: -");
+        }
+    }
+
+    private void clearFields() {
+        ageField.setText("");
+        heightField.setText("");
+        heightInchField.setText("");
+        weightField.setText("");
+        maleRadio.setSelected(true);
+        heightUnitComboBox.setSelectedItem("cm");
+        heightInchField.setVisible(false);
+        bmiResultLabel.setText("BMI: -");
+        bmrResultLabel.setText("BMR: -");
+        diabetesRiskLabel.setText("Diabetes Risk: -");
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new BMI().setVisible(true));
+    }
+}

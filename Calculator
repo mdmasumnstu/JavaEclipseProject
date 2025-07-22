@@ -1,0 +1,843 @@
+package calculator;
+
+import java.awt.EventQueue;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import java.awt.Font;
+import javax.swing.JTextField;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import javax.swing.JRadioButton;
+import javax.swing.ButtonGroup;
+import java.awt.Color; // Import Color class
+
+public class Calculator {
+
+	private JFrame frame;
+	private JTextField textField;
+
+	double firstNumber;
+	double secondNumber;
+	double result;
+	String operation;
+
+	private JButton btnR, btnExp, btnSin, btnCos, btnTan, btnOneOverX, btnLog, btnSinh, btnCosh, btnTanh;
+	private JButton btnXPowerY, btnPi, btnClear, btnBackspace, btnAdd;
+	private JButton btnXCube, btnSeven, btnEight, btnNine, btnSubtract;
+	private JButton btnXSquared, btnFour, btnFive, btnSix, btnMultiply;
+	private JButton btnFactorial, btnOne, btnTwo, btnThree, btnDivide;
+	private JButton btnPlusMinus, btnZero, btnDecimal, btnEquals;
+
+	private JButton btnSquareRoot, btnNthRoot, btnAbs, btnOpenParenthesis_as_Log, btnLn; // Renamed for clarity
+
+
+	private JRadioButton rdbtnOn;
+	private JRadioButton rdbtnOff;
+
+
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					Calculator window = new Calculator();
+					window.frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	
+	public Calculator() {
+		initialize();
+	}
+
+	
+	
+	public void enableButtons(boolean enable) {
+		textField.setEnabled(enable);
+
+	
+		JButton[] allButtons = {
+				btnR, btnExp, btnSin, btnCos, btnTan, btnOneOverX, btnLog, btnSinh, btnCosh, btnTanh,
+				btnXPowerY, btnPi, btnClear, btnBackspace, btnAdd,
+				btnXCube, btnSeven, btnEight, btnNine, btnSubtract,
+				btnXSquared, btnFour, btnFive, btnSix, btnMultiply,
+				btnFactorial, btnOne, btnTwo, btnThree, btnDivide,
+				btnPlusMinus, btnZero, btnDecimal, btnEquals,
+				
+				btnSquareRoot, btnNthRoot, btnAbs, btnOpenParenthesis_as_Log, btnLn
+		};
+
+		for (JButton button : allButtons) {
+			if (button != null) {
+				button.setEnabled(enable);
+			}
+		}
+
+		if (!enable) {
+			textField.setText("");
+		}
+	}
+
+	
+	private void initialize() {
+		frame = new JFrame();
+		frame.setBounds(100, 100, 354, 558);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().setLayout(null);
+		frame.getContentPane().setBackground(new Color(123, 63, 0)); // RGB for a chocolate brown
+
+		JLabel lblNewLabel = new JLabel("Scientific Calculator");
+		lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 29));
+		lblNewLabel.setBounds(23, 0, 291, 36);
+		frame.getContentPane().add(lblNewLabel);
+		lblNewLabel.setForeground(Color.PINK);
+
+		textField = new JTextField();
+		textField.setBounds(10, 35, 318, 66);
+		frame.getContentPane().add(textField);
+		textField.setColumns(10);
+		textField.setBackground(Color.WHITE);
+		textField.setForeground(Color.BLACK);
+
+		// --- ON/OFF radio buttons ---
+		rdbtnOn = new JRadioButton("ON");
+		rdbtnOn.setFont(new Font("Tahoma", Font.BOLD, 17));
+		rdbtnOn.setBounds(10, 108, 57, 23);
+		frame.getContentPane().add(rdbtnOn);
+		rdbtnOn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				enableButtons(true);
+			}
+		});
+		rdbtnOn.setBackground(new Color(123, 63, 0));
+		rdbtnOn.setForeground(Color.GREEN);
+
+		rdbtnOff = new JRadioButton("OFF");
+		rdbtnOff.setFont(new Font("Tahoma", Font.BOLD, 16));
+		rdbtnOff.setBounds(70, 108, 73, 23);
+		frame.getContentPane().add(rdbtnOff);
+		rdbtnOff.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				enableButtons(false);
+			}
+		});
+		rdbtnOff.setBackground(new Color(123, 63, 0));
+		rdbtnOff.setForeground(Color.RED);
+
+		ButtonGroup group = new ButtonGroup();
+		group.add(rdbtnOn);
+		group.add(rdbtnOff);
+
+
+		// --- Scientific function buttons (first row) ---
+		btnR = new JButton("R");
+		btnR.setFont(new Font("Tahoma", Font.BOLD, 18));
+		btnR.setBounds(3, 140, 66, 47);
+		frame.getContentPane().add(btnR);
+		btnR.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					double num = Double.parseDouble(textField.getText());
+					textField.setText(String.valueOf(Math.toRadians(num)));
+				} catch (NumberFormatException ex) {
+					textField.setText("Error");
+				}
+			}
+		});
+		btnR.setBackground(Color.BLACK);
+		btnR.setForeground(Color.WHITE);
+		btnR.setOpaque(true);
+
+		btnExp = new JButton("eˣ");
+		btnExp.setFont(new Font("Tahoma", Font.BOLD, 21));
+		btnExp.setBounds(70, 140, 66, 47);
+		frame.getContentPane().add(btnExp);
+		btnExp.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					double num = Double.parseDouble(textField.getText());
+					textField.setText(String.valueOf(Math.exp(num)));
+				} catch (NumberFormatException ex) {
+					textField.setText("Error");
+				}
+			}
+		});
+		btnExp.setBackground(Color.BLACK);
+		btnExp.setForeground(Color.WHITE);
+		btnExp.setOpaque(true);
+
+		btnSin = new JButton("sin");
+		btnSin.setFont(new Font("Tahoma", Font.BOLD, 18));
+		btnSin.setBounds(137, 140, 66, 47);
+		frame.getContentPane().add(btnSin);
+		btnSin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					double num = Double.parseDouble(textField.getText());
+					textField.setText(String.valueOf(Math.sin(Math.toRadians(num))));
+				} catch (NumberFormatException ex) {
+					textField.setText("Error");
+				}
+			}
+		});
+		btnSin.setBackground(Color.BLACK);
+		btnSin.setForeground(Color.WHITE);
+		btnSin.setOpaque(true);
+
+		btnCos = new JButton("cos");
+		btnCos.setFont(new Font("Tahoma", Font.BOLD, 18));
+		btnCos.setBounds(203, 140, 66, 47);
+		frame.getContentPane().add(btnCos);
+		btnCos.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					double num = Double.parseDouble(textField.getText());
+					textField.setText(String.valueOf(Math.cos(Math.toRadians(num))));
+				} catch (NumberFormatException ex) {
+					textField.setText("Error");
+				}
+			}
+		});
+		btnCos.setBackground(Color.BLACK);
+		btnCos.setForeground(Color.WHITE);
+		btnCos.setOpaque(true);
+
+		btnTan = new JButton("tan");
+		btnTan.setFont(new Font("Tahoma", Font.BOLD, 18));
+		btnTan.setBounds(269, 140, 66, 47);
+		frame.getContentPane().add(btnTan);
+		btnTan.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					double num = Double.parseDouble(textField.getText());
+					textField.setText(String.valueOf(Math.tan(Math.toRadians(num))));
+				} catch (NumberFormatException ex) {
+					textField.setText("Error");
+				}
+			}
+		});
+		btnTan.setBackground(Color.BLACK);
+		btnTan.setForeground(Color.WHITE);
+		btnTan.setOpaque(true);
+
+		// --- Scientific function buttons (second row) ---
+		btnOneOverX = new JButton("1⁄n");
+		btnOneOverX.setFont(new Font("Tahoma", Font.BOLD, 17));
+		btnOneOverX.setBounds(3, 187, 66, 47);
+		frame.getContentPane().add(btnOneOverX);
+		btnOneOverX.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					double num = Double.parseDouble(textField.getText());
+					if (num == 0) {
+						textField.setText("Error");
+						return;
+					}
+					textField.setText(String.valueOf(1 / num));
+				} catch (NumberFormatException ex) {
+					textField.setText("Error");
+				}
+			}
+		});
+		btnOneOverX.setBackground(Color.BLACK);
+		btnOneOverX.setForeground(Color.WHITE);
+		btnOneOverX.setOpaque(true);
+
+		btnLog = new JButton("log");
+		btnLog.setFont(new Font("Tahoma", Font.BOLD, 18));
+		btnLog.setBounds(70, 187, 66, 47);
+		frame.getContentPane().add(btnLog);
+		btnLog.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					double num = Double.parseDouble(textField.getText());
+					if (num <= 0) {
+						textField.setText("Error");
+						return;
+					}
+					textField.setText(String.valueOf(Math.log10(num)));
+				} catch (NumberFormatException ex) {
+					textField.setText("Error");
+				}
+			}
+		});
+		btnLog.setBackground(Color.BLACK);
+		btnLog.setForeground(Color.WHITE);
+		btnLog.setOpaque(true);
+
+		btnSinh = new JButton("sinh");
+		btnSinh.setFont(new Font("Tahoma", Font.BOLD, 14));
+		btnSinh.setBounds(137, 187, 66, 47);
+		frame.getContentPane().add(btnSinh);
+		btnSinh.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					double num = Double.parseDouble(textField.getText());
+					textField.setText(String.valueOf(Math.sinh(Math.toRadians(num))));
+				} catch (NumberFormatException ex) {
+					textField.setText("Error");
+				}
+			}
+		});
+		btnSinh.setBackground(Color.BLACK);
+		btnSinh.setForeground(Color.WHITE);
+		btnSinh.setOpaque(true);
+
+		btnCosh = new JButton("cosh");
+		btnCosh.setFont(new Font("Tahoma", Font.BOLD, 14));
+		btnCosh.setBounds(203, 187, 66, 47);
+		frame.getContentPane().add(btnCosh);
+		btnCosh.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					double num = Double.parseDouble(textField.getText());
+					textField.setText(String.valueOf(Math.cosh(Math.toRadians(num))));
+				} catch (NumberFormatException ex) {
+					textField.setText("Error");
+				}
+			}
+		});
+		btnCosh.setBackground(Color.BLACK);
+		btnCosh.setForeground(Color.WHITE);
+		btnCosh.setOpaque(true);
+
+		btnTanh = new JButton("tanh");
+		btnTanh.setFont(new Font("Tahoma", Font.BOLD, 14));
+		btnTanh.setBounds(269, 187, 66, 47);
+		frame.getContentPane().add(btnTanh);
+		btnTanh.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					double num = Double.parseDouble(textField.getText());
+					textField.setText(String.valueOf(Math.tanh(Math.toRadians(num))));
+				} catch (NumberFormatException ex) {
+					textField.setText("Error");
+				}
+			}
+		});
+		btnTanh.setBackground(Color.BLACK);
+		btnTanh.setForeground(Color.WHITE);
+		btnTanh.setOpaque(true);
+
+		
+		int newButtonY = 187 + 47; 
+		btnSquareRoot = new JButton("√x");
+		btnSquareRoot.setFont(new Font("Tahoma", Font.BOLD, 18));
+		btnSquareRoot.setBounds(3, 234, 66, 53);
+		frame.getContentPane().add(btnSquareRoot);
+		btnSquareRoot.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					double num = Double.parseDouble(textField.getText());
+					if (num < 0) {
+						textField.setText("Error");
+						return;
+					}
+					textField.setText(String.valueOf(Math.sqrt(num)));
+				} catch (NumberFormatException ex) {
+					textField.setText("Error");
+				}
+			}
+		});
+		btnSquareRoot.setBackground(Color.BLACK);
+		btnSquareRoot.setForeground(Color.WHITE);
+		btnSquareRoot.setOpaque(true);
+
+		btnNthRoot = new JButton("ⁿ√x");
+		btnNthRoot.setFont(new Font("Tahoma", Font.BOLD, 16));
+		btnNthRoot.setBounds(70, 234, 66, 53);
+		frame.getContentPane().add(btnNthRoot);
+		btnNthRoot.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				firstNumber = Double.parseDouble(textField.getText());
+				textField.setText("");
+				operation = "nthRoot"; // New operation
+			}
+		});
+		btnNthRoot.setBackground(Color.BLACK);
+		btnNthRoot.setForeground(Color.WHITE);
+		btnNthRoot.setOpaque(true);
+
+		btnAbs = new JButton("|x|");
+		btnAbs.setFont(new Font("Tahoma", Font.BOLD, 16));
+		btnAbs.setBounds(137, 234, 66, 53);
+		frame.getContentPane().add(btnAbs);
+		btnAbs.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					double num = Double.parseDouble(textField.getText());
+					textField.setText(String.valueOf(Math.abs(num)));
+				} catch (NumberFormatException ex) {
+					textField.setText("Error");
+				}
+			}
+		});
+		btnAbs.setBackground(Color.BLACK);
+		btnAbs.setForeground(Color.WHITE);
+		btnAbs.setOpaque(true);
+
+		
+		btnOpenParenthesis_as_Log = new JButton("log"); 
+		btnOpenParenthesis_as_Log.setFont(new Font("Tahoma", Font.BOLD, 18)); 
+		btnOpenParenthesis_as_Log.setBounds(203, newButtonY, 66, 53);
+		frame.getContentPane().add(btnOpenParenthesis_as_Log);
+		btnOpenParenthesis_as_Log.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					double num = Double.parseDouble(textField.getText());
+					if (num <= 0) {
+						textField.setText("Error");
+						return;
+					}
+					textField.setText(String.valueOf(Math.log10(num))); 
+				} catch (NumberFormatException ex) {
+					textField.setText("Error");
+				}
+			}
+		});
+		btnOpenParenthesis_as_Log.setBackground(Color.BLACK);
+		btnOpenParenthesis_as_Log.setForeground(Color.WHITE);
+		btnOpenParenthesis_as_Log.setOpaque(true);
+
+		btnLn = new JButton("ln");
+		btnLn.setFont(new Font("Tahoma", Font.BOLD, 18));
+		btnLn.setBounds(269, newButtonY, 66, 53);
+		frame.getContentPane().add(btnLn);
+		btnLn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					double num = Double.parseDouble(textField.getText());
+					if (num <= 0) {
+						textField.setText("Error");
+						return;
+					}
+					textField.setText(String.valueOf(Math.log(num))); 
+				} catch (NumberFormatException ex) {
+					textField.setText("Error");
+				}
+			}
+		});
+		btnLn.setBackground(Color.BLACK);
+		btnLn.setForeground(Color.WHITE);
+		btnLn.setOpaque(true);
+		
+
+		btnXPowerY = new JButton(" xʸ");
+		btnXPowerY.setFont(new Font("Tahoma", Font.BOLD, 21));
+		btnXPowerY.setBounds(3, 286, 66, 53);
+		frame.getContentPane().add(btnXPowerY);
+		btnXPowerY.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				firstNumber = Double.parseDouble(textField.getText());
+				textField.setText("");
+				operation = "x^y";
+			}
+		});
+		btnXPowerY.setBackground(Color.BLACK);
+		btnXPowerY.setForeground(Color.WHITE);
+		btnXPowerY.setOpaque(true);
+
+		btnPi = new JButton("π");
+		btnPi.setFont(new Font("Tahoma", Font.BOLD, 18));
+		btnPi.setBounds(70, 286, 66, 54);
+		frame.getContentPane().add(btnPi);
+		btnPi.addActionListener(new ActionListener() {
+          public void actionPerformed(ActionEvent e) {
+		       textField.setText(String.valueOf(Math.PI));
+		    }
+		});
+		btnPi.setBackground(Color.BLACK);
+		btnPi.setForeground(Color.WHITE);
+		btnPi.setOpaque(true);
+
+		btnClear = new JButton("Clr");
+		btnClear.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				textField.setText(null);
+			}
+		});
+		btnClear.setFont(new Font("Tahoma", Font.BOLD, 18));
+		btnClear.setBounds(137, 286, 66, 54);
+		frame.getContentPane().add(btnClear);
+		btnClear.setBackground(Color.BLACK);
+		btnClear.setForeground(Color.WHITE);
+		btnClear.setOpaque(true);
+
+		btnBackspace = new JButton("←");
+		btnBackspace.setFont(new Font("Tahoma", Font.BOLD, 18));
+		btnBackspace.setBounds(203, 286, 66, 54);
+		frame.getContentPane().add(btnBackspace);
+		btnBackspace.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String backspace = null;
+				if (textField.getText().length() > 0) {
+					StringBuilder strB = new StringBuilder(textField.getText());
+					strB.deleteCharAt(textField.getText().length() - 1);
+					backspace = strB.toString();
+					textField.setText(backspace);
+				}
+			}
+		});
+		btnBackspace.setBackground(Color.BLACK);
+		btnBackspace.setForeground(Color.WHITE);
+		btnBackspace.setOpaque(true);
+
+		btnAdd = new JButton("+");
+		btnAdd.setFont(new Font("Tahoma", Font.BOLD, 21));
+		btnAdd.setBounds(269, 286, 66, 53);
+		frame.getContentPane().add(btnAdd);
+		btnAdd.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				firstNumber = Double.parseDouble(textField.getText());
+				textField.setText("");
+				operation = "+";
+			}
+		});
+		btnAdd.setBackground(Color.BLACK);
+		btnAdd.setForeground(Color.WHITE);
+		btnAdd.setOpaque(true);
+
+		btnXCube = new JButton("x³");
+		btnXCube.setFont(new Font("Tahoma", Font.BOLD, 21));
+		btnXCube.setBounds(3, 335, 66, 47);
+		frame.getContentPane().add(btnXCube);
+		btnXCube.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					double num = Double.parseDouble(textField.getText());
+					textField.setText(String.valueOf(Math.pow(num, 3)));
+				} catch (NumberFormatException ex) {
+					textField.setText("Error");
+				}
+			}
+		});
+		btnXCube.setBackground(Color.BLACK);
+		btnXCube.setForeground(Color.WHITE);
+		btnXCube.setOpaque(true);
+
+	
+		btnSeven = new JButton("7");
+		btnSeven.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String number = textField.getText() + btnSeven.getText();
+				textField.setText(number);
+			}
+		});
+		btnSeven.setFont(new Font("Tahoma", Font.BOLD, 21));
+		btnSeven.setBounds(70, 335, 66, 47);
+		frame.getContentPane().add(btnSeven);
+		btnSeven.setBackground(Color.BLACK);
+		btnSeven.setForeground(Color.WHITE);
+		btnSeven.setOpaque(true);
+
+		btnEight = new JButton("8");
+		btnEight.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String number = textField.getText() + btnEight.getText();
+				textField.setText(number);
+			}
+		});
+		btnEight.setFont(new Font("Tahoma", Font.BOLD, 21));
+		btnEight.setBounds(137, 335, 66, 47);
+		frame.getContentPane().add(btnEight);
+		btnEight.setBackground(Color.BLACK);
+		btnEight.setForeground(Color.WHITE);
+		btnEight.setOpaque(true);
+
+		btnNine = new JButton("9");
+		btnNine.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String number = textField.getText() + btnNine.getText();
+				textField.setText(number);
+			}
+		});
+		btnNine.setFont(new Font("Tahoma", Font.BOLD, 21));
+		btnNine.setBounds(203, 335, 66, 47);
+		frame.getContentPane().add(btnNine);
+		btnNine.setBackground(Color.BLACK);
+		btnNine.setForeground(Color.WHITE);
+		btnNine.setOpaque(true);
+
+		btnSubtract = new JButton("-");
+		btnSubtract.setFont(new Font("Tahoma", Font.BOLD, 21));
+		btnSubtract.setBounds(269, 335, 66, 47);
+		frame.getContentPane().add(btnSubtract);
+		btnSubtract.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				firstNumber = Double.parseDouble(textField.getText());
+				textField.setText("");
+				operation = "-";
+			}
+		});
+		btnSubtract.setBackground(Color.BLACK);
+		btnSubtract.setForeground(Color.WHITE);
+		btnSubtract.setOpaque(true);
+
+		btnXSquared = new JButton("x²");
+		btnXSquared.setFont(new Font("Tahoma", Font.BOLD, 21));
+		btnXSquared.setBounds(3, 381, 66, 47);
+		frame.getContentPane().add(btnXSquared);
+		btnXSquared.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					double num = Double.parseDouble(textField.getText());
+					textField.setText(String.valueOf(Math.pow(num, 2)));
+				} catch (NumberFormatException ex) {
+					textField.setText("Error");
+				}
+			}
+		});
+		btnXSquared.setBackground(Color.BLACK);
+		btnXSquared.setForeground(Color.WHITE);
+		btnXSquared.setOpaque(true);
+
+		btnFour = new JButton("4");
+		btnFour.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String number = textField.getText() + btnFour.getText();
+				textField.setText(number);
+			}
+		});
+		btnFour.setFont(new Font("Tahoma", Font.BOLD, 21));
+		btnFour.setBounds(70, 381, 66, 47);
+		frame.getContentPane().add(btnFour);
+		btnFour.setBackground(Color.BLACK);
+		btnFour.setForeground(Color.WHITE);
+		btnFour.setOpaque(true);
+
+		btnFive = new JButton("5");
+		btnFive.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String number = textField.getText() + btnFive.getText();
+				textField.setText(number);
+			}
+		});
+		btnFive.setFont(new Font("Tahoma", Font.BOLD, 21));
+		btnFive.setBounds(137, 381, 66, 47);
+		frame.getContentPane().add(btnFive);
+		btnFive.setBackground(Color.BLACK);
+		btnFive.setForeground(Color.WHITE);
+		btnFive.setOpaque(true);
+
+		btnSix = new JButton("6");
+		btnSix.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String number = textField.getText() + btnSix.getText();
+				textField.setText(number);
+			}
+		});
+		btnSix.setFont(new Font("Tahoma", Font.BOLD, 21));
+		btnSix.setBounds(203, 381, 66, 47);
+		frame.getContentPane().add(btnSix);
+		btnSix.setBackground(Color.BLACK);
+		btnSix.setForeground(Color.WHITE);
+		btnSix.setOpaque(true);
+
+		btnMultiply = new JButton("*");
+		btnMultiply.setFont(new Font("Tahoma", Font.BOLD, 21));
+		btnMultiply.setBounds(269, 381, 66, 47);
+		frame.getContentPane().add(btnMultiply);
+		btnMultiply.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				firstNumber = Double.parseDouble(textField.getText());
+				textField.setText("");
+				operation = "*";
+			}
+		});
+		btnMultiply.setBackground(Color.BLACK);
+		btnMultiply.setForeground(Color.WHITE);
+		btnMultiply.setOpaque(true);
+
+		btnFactorial = new JButton("n!");
+		btnFactorial.setFont(new Font("Tahoma", Font.BOLD, 18));
+		btnFactorial.setBounds(3, 426, 66, 47);
+		frame.getContentPane().add(btnFactorial);
+		btnFactorial.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					int num = Integer.parseInt(textField.getText());
+					if (num < 0) {
+						textField.setText("Error");
+						return;
+					}
+					long factorial = 1;
+					for (int i = 1; i <= num; ++i) {
+						factorial *= i;
+					}
+					textField.setText(String.valueOf(factorial));
+				} catch (NumberFormatException ex) {
+					textField.setText("Error");
+				}
+			}
+		});
+		btnFactorial.setBackground(Color.BLACK);
+		btnFactorial.setForeground(Color.WHITE);
+		btnFactorial.setOpaque(true);
+
+		btnOne = new JButton("1");
+		btnOne.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				String number = textField.getText() + btnOne.getText();
+				textField.setText(number);
+			}
+		});
+		btnOne.setFont(new Font("Tahoma", Font.BOLD, 21));
+		btnOne.setBounds(70, 425, 66, 47);
+		frame.getContentPane().add(btnOne);
+		btnOne.setBackground(Color.BLACK);
+		btnOne.setForeground(Color.WHITE);
+		btnOne.setOpaque(true);
+
+		btnTwo = new JButton("2");
+		btnTwo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String number = textField.getText() + btnTwo.getText();
+				textField.setText(number);
+			}
+		});
+		btnTwo.setFont(new Font("Tahoma", Font.BOLD, 21));
+		btnTwo.setBounds(137, 425, 66, 47);
+		frame.getContentPane().add(btnTwo);
+		btnTwo.setBackground(Color.BLACK);
+		btnTwo.setForeground(Color.WHITE);
+		btnTwo.setOpaque(true);
+
+		btnThree = new JButton("3");
+		btnThree.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String number = textField.getText() + btnThree.getText();
+				textField.setText(number);
+			}
+		});
+		btnThree.setFont(new Font("Tahoma", Font.BOLD, 21));
+		btnThree.setBounds(203, 425, 66, 47);
+		frame.getContentPane().add(btnThree);
+		btnThree.setBackground(Color.BLACK);
+		btnThree.setForeground(Color.WHITE);
+		btnThree.setOpaque(true);
+
+		btnDivide = new JButton("/");
+		btnDivide.setFont(new Font("Tahoma", Font.BOLD, 21));
+		btnDivide.setBounds(269, 425, 66, 47);
+		frame.getContentPane().add(btnDivide);
+		btnDivide.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				firstNumber = Double.parseDouble(textField.getText());
+				textField.setText("");
+				operation = "/";
+			}
+		});
+		btnDivide.setBackground(Color.BLACK);
+		btnDivide.setForeground(Color.WHITE);
+		btnDivide.setOpaque(true);
+
+		btnPlusMinus = new JButton("+/-");
+		btnPlusMinus.setFont(new Font("Tahoma", Font.BOLD, 17));
+		btnPlusMinus.setBounds(3, 473, 66, 47);
+		frame.getContentPane().add(btnPlusMinus);
+		btnPlusMinus.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					double ops = Double.parseDouble(String.valueOf(textField.getText()));
+					ops = ops * (-1);
+					textField.setText(String.valueOf(ops));
+				} catch (NumberFormatException ex) {
+					
+				}
+			}
+		});
+		btnPlusMinus.setBackground(Color.BLACK);
+		btnPlusMinus.setForeground(Color.WHITE);
+		btnPlusMinus.setOpaque(true);
+
+		btnZero = new JButton("0");
+		btnZero.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				String number = textField.getText() + btnZero.getText();
+				textField.setText(number);
+			}
+		});
+		btnZero.setFont(new Font("Tahoma", Font.BOLD, 21));
+		btnZero.setBounds(70, 472, 133, 47);
+		frame.getContentPane().add(btnZero);
+		btnZero.setBackground(Color.BLACK);
+		btnZero.setForeground(Color.WHITE);
+		btnZero.setOpaque(true);
+
+		btnDecimal = new JButton(".");
+		btnDecimal.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (!textField.getText().contains(".")) {
+					String number = textField.getText() + btnDecimal.getText();
+					textField.setText(number);
+				}
+			}
+		});
+		btnDecimal.setFont(new Font("Tahoma", Font.BOLD, 21));
+		btnDecimal.setBounds(203, 472, 66, 47);
+		frame.getContentPane().add(btnDecimal);
+		btnDecimal.setBackground(Color.BLACK);
+		btnDecimal.setForeground(Color.WHITE);
+		btnDecimal.setOpaque(true);
+
+		btnEquals = new JButton("=");
+		btnEquals.setFont(new Font("Tahoma", Font.BOLD, 21));
+		btnEquals.setBounds(269, 472, 66, 47);
+		frame.getContentPane().add(btnEquals);
+		btnEquals.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					secondNumber = Double.parseDouble(textField.getText());
+
+					switch (operation) {
+						case "+":
+							result = firstNumber + secondNumber;
+							break;
+						case "-":
+							result = firstNumber - secondNumber;
+							break;
+						case "*":
+							result = firstNumber * secondNumber;
+							break;
+						case "/":
+							if (secondNumber == 0) {
+								textField.setText("Error: Div by 0");
+								return;
+							}
+							result = firstNumber / secondNumber;
+							break;
+						case "x^y":
+							result = Math.pow(firstNumber, secondNumber);
+							break;
+						case "nthRoot": // Handle n-th root operation
+							if (secondNumber == 0) {
+								textField.setText("Error: N cannot be 0");
+								return;
+							}
+							result = Math.pow(firstNumber, 1.0 / secondNumber);
+							break;
+						default:
+							result = secondNumber;
+							break;
+					}
+					textField.setText(String.valueOf(result));
+				} catch (NumberFormatException ex) {
+					textField.setText("Error");
+				}
+			}
+		});
+		btnEquals.setBackground(Color.BLACK);
+		btnEquals.setForeground(Color.WHITE);
+		btnEquals.setOpaque(true);
+
+		
+		enableButtons(false);
+		rdbtnOn.setEnabled(true);
+		rdbtnOff.setEnabled(true);
+		rdbtnOff.setSelected(true);
+	}
+}
